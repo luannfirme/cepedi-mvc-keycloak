@@ -23,13 +23,14 @@ namespace cepedi_mvc_keycloak.Configurations
                 options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.Authority = $"{configuration["Keycloak:auth-server-url"]}realms/{configuration["Keycloak:realm"]}";
                 options.ClientId = configuration["Keycloak:resource"];
+                options.ClientSecret = configuration["Keycloak:credentials:secret"];
                 options.ResponseType = OpenIdConnectResponseType.CodeIdTokenToken;
                 options.UsePkce = true;
                 options.Scope.Add("profile");
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters() { RoleClaimType = "roles" };
+                options.TokenValidationParameters = new TokenValidationParameters { RoleClaimType = "roles" };
             });
 
             return services;

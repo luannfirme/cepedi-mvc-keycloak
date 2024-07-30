@@ -22,6 +22,7 @@ namespace cepedi_mvc_keycloak.Controllers
         }
 
         [Authorize]
+        //[Authorize(Roles = "privacidade")]
         public IActionResult Privacy()
         {
             return View();
