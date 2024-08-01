@@ -33,6 +33,8 @@ namespace cepedi_mvc_keycloak.Configurations
                 options.TokenValidationParameters = new TokenValidationParameters { RoleClaimType = "roles" };
             });
 
+
+
             return services;
         }
     }
