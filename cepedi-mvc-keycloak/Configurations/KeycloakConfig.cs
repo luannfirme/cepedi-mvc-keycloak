@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace cepedi_mvc_keycloak.Configurations
 {
@@ -11,7 +11,8 @@ namespace cepedi_mvc_keycloak.Configurations
         {
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
             .AddCookie(opt =>
@@ -26,14 +27,31 @@ namespace cepedi_mvc_keycloak.Configurations
                 options.ClientSecret = configuration["Keycloak:credentials:secret"];
                 options.ResponseType = OpenIdConnectResponseType.CodeIdTokenToken;
                 options.UsePkce = true;
-                options.Scope.Add("profile");
                 options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters { RoleClaimType = "roles" };
+                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    NameClaimType = "preferred_username",
+                    RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+                };
+                options.Events = new OpenIdConnectEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        var claimsIdentity = (ClaimsIdentity)context.Principal.Identity;
+
+                        var roleClaims = context.Principal.FindAll("http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
+
+                        var newRoleClaims = roleClaims.Select(roleClaim =>
+                                new Claim(ClaimsIdentity.DefaultRoleClaimType, roleClaim.Value)).ToList();
+
+                        claimsIdentity.AddClaims(newRoleClaims);
+
+                        return Task.CompletedTask;
+                    }
+                };
             });
-
-
 
             return services;
         }

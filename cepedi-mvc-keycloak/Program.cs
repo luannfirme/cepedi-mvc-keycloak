@@ -2,9 +2,9 @@ using cepedi_mvc_keycloak.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.ConfigurarKeycloak(builder.Configuration);
-
 builder.Services.AddControllersWithViews();
+
+builder.Services.ConfigurarKeycloak(builder.Configuration);
 
 var app = builder.Build();
 

@@ -7,6 +7,8 @@ using System.Diagnostics;
 
 namespace cepedi_mvc_keycloak.Controllers
 {
+
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -21,8 +23,7 @@ namespace cepedi_mvc_keycloak.Controllers
             return View();
         }
 
-        [Authorize]
-        //[Authorize(Roles = "privacidade")]
+        [Authorize(Roles = "privacidade")]
         public IActionResult Privacy()
         {
             return View();
