@@ -28,6 +28,12 @@ namespace cepedi_mvc_keycloak.Controllers
             return View();
         }
 
+        [Authorize(Roles = "painel")]
+        public IActionResult Painel()
+        {
+            return View();
+        }
+
         public IActionResult Logout()
         {
             return new SignOutResult(
